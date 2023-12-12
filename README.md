@@ -1,3 +1,9 @@
+This is not finished yet if you are interessted watch out for further commits...
+This code should be in a usable state until the end of January if everything goes as planed but it will probably be mid-end of february.
+
+Also follow this project on my other sites for the 3D-Modells and PCB etc.
+If here is still no link then im sorry, i will probably post it in the near future. :)
+
 This code is built on different Libraries, use it at your own risk.
 I have created this not for comercial use only as a proof of concept.
 Any further risk taken is at your own risk.
