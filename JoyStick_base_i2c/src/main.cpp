@@ -1,14 +1,23 @@
 #include <Arduino.h>
 #include "Joystick.h"
 
-Joystick_ Base_module(
+Joystick_ Base_module(    //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
   JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
-  26, 4,
-  true, true, false,
-  false, false, false,
-  false, false, false,
-  false, false);
+  26, 4,                  //  27  Buttons total on flightstick (might increas with an addition of a throttle); 4 hatswitches
+  true, true, false,      //  X,Y Axies used (roll and pitch yaw at some point with rudders maybe?)
+  false, false, false,    //  no "right" X,Y, and Z
+  false, false, false,    //  rudder, Throttle and accelorator
+  false, false);          //  brakes and steering
 
+
+
+void setup(){
+  Base_module.setXAxisRange(-512,511);
+  Base_module.setYAxisRange(-512,511);
+}
+void loop(){
+
+}
 Joystick_ Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
   32, 0,                  // Button Count, Hat Switch Count                 32 possible buttons but no hatswitches
   true, true, false,      // X and Y, but no Z Axis                         aka roll and pitch
@@ -38,6 +47,10 @@ void testSingleButtonPush(unsigned int button)
     Joystick.pressButton(button);
   }
 }
+
+/*
+
+Lets not go there ...yet
 
 void testMultiButtonPush(unsigned int currentStep) 
 {
@@ -69,6 +82,8 @@ void testMultiButtonPush(unsigned int currentStep)
     } // if (currentStep == 3)
   } // for (int button = 0; button < 32; button++)
 }
+
+*/
 
 void testXYAxis(unsigned int currentStep)
 {
