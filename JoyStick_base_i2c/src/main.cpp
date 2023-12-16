@@ -1,4 +1,6 @@
 #include "Arduino.h"
+#include <Wire.h>
+
 //===================
 // Using I2C to send and receive structs between two Arduinos
 //   SDA is the data connection and SCL is the clock connection
@@ -7,80 +9,58 @@
 //   GNDs must also be connected
 //===================
 
-
 // data to be sent and received
-struct I2cTxStruct {
-    char textA[16];         // 16 bytes
-    int valA;               //  2
-    unsigned long valB;     //  4
-    byte padding[10];       // 10
-                            //------
-                            // 32
+struct I2cRxStruct
+{
+    bool textB[26];     // 26 bytes
+    byte padding[10];   // 10
+                        //------
+                        // 36
 };
 
-struct I2cRxStruct {
-    char textB[16];         // 16 bytes
-    int valC;               //  2
-    unsigned long valD;     //  4
-    byte padding[10];       // 10
-                            //------
-                            // 32
-};
+int messageSize = 36;
 
-I2cTxStruct txData = {"xxx", 236, 0};
 I2cRxStruct rxData;
 
-bool newTxData = false;
 bool newRxData = false;
-bool rqSent = false;
-
+bool rqData = false;
 
 // I2C control stuff
-#include <Wire.h>
+const byte thisAddress = 8; // these need to be swapped for the other Arduino
+const byte otherAddress = 9;
 
-const byte thisAddress = 9; // these need to be swapped for the other Arduino
-const byte otherAddress = 8;
-
-//===========
-void requestEvent() {
-    Wire.write((byte*) &txData, sizeof(txData));
-    rqSent = true;
-}
+// timing variables
+unsigned long prevUpdateTime = 0;
+unsigned long updateInterval = 500;
 
 //=================================
-void setup() {
-    Serial.begin(115200);
-    Serial.println("\nStarting I2C SlaveRespond demo\n");
-        // set up I2C
+void setup()
+{
+    // set up I2C
     Wire.begin(thisAddress); // join i2c bus
-    Wire.onRequest(requestEvent); // register function to be called when a request arrives
-
+    //~ Wire.onReceive(receiveEvent); // register function to be called when a message arrives
 }
 
-//============
-void updateDataToSend() {
-    // update the data after the previous message has been
-    //    sent in response to the request
-    // this ensures the new data will ready when the next request arrives
-    if (rqSent == true) {
-        rqSent = false;
-        char sText[] = "SendB";
-        strcpy(txData.textA, sText);
-        txData.valA += 10;
-        if (txData.valA > 300) {
-            txData.valA = 236;
-        }
-        txData.valB = millis();
+//=============
+void requestData()
+{
+    if (rqData == true){ // just one request following every Tx
+        byte stop = true;
+        byte numBytes = messageSize;
+        Wire.requestFrom(otherAddress, numBytes, stop);
+        // the request is immediately followed by the read for the response
+        Wire.readBytes((byte *)&rxData, numBytes);
+        newRxData = true;
+        rqData = false;
     }
 }
 
 //============
-void loop() {
+void loop()
+{
     // this bit checks if a message has been received
-    if (newRxData == true) {
-        newRxData = false;
-    }
-    // this function updates the data in txData
-    updateDataToSend();
-    // this function sends the data if one is ready to be sent
+    if (newRxData == true){
+        newRxData = false;}
+    if (millis() - prevUpdateTime >= updateInterval){
+        requestData();prevUpdateTime = millis();}
 }
