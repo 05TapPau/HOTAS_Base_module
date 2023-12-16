@@ -1,199 +1,86 @@
-#include <Arduino.h>
-#include "Joystick.h"
-
-Joystick_ Base_module(    //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
-  JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
-  26, 4,                  //  27  Buttons total on flightstick (might increas with an addition of a throttle); 4 hatswitches
-  true, true, false,      //  X,Y Axies used (roll and pitch yaw at some point with rudders maybe?)
-  false, false, false,    //  no "right" X,Y, and Z
-  false, false, false,    //  rudder, Throttle and accelorator
-  false, false);          //  brakes and steering
+#include "Arduino.h"
+//===================
+// Using I2C to send and receive structs between two Arduinos
+//   SDA is the data connection and SCL is the clock connection
+//   On an Uno  SDA is A4 and SCL is A5
+//   On an Mega SDA is 20 and SCL is 21
+//   GNDs must also be connected
+//===================
 
 
+// data to be sent and received
+struct I2cTxStruct {
+    char textA[16];         // 16 bytes
+    int valA;               //  2
+    unsigned long valB;     //  4
+    byte padding[10];       // 10
+                            //------
+                            // 32
+};
 
-void setup(){
-  Base_module.setXAxisRange(-512,511);
-  Base_module.setYAxisRange(-512,511);
-}
-void loop(){
+struct I2cRxStruct {
+    char textB[16];         // 16 bytes
+    int valC;               //  2
+    unsigned long valD;     //  4
+    byte padding[10];       // 10
+                            //------
+                            // 32
+};
 
-}
-Joystick_ Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
-  32, 0,                  // Button Count, Hat Switch Count                 32 possible buttons but no hatswitches
-  true, true, false,      // X and Y, but no Z Axis                         aka roll and pitch
-  false, false, false,    // No Rx, Ry, or Rz
-  true, true,             // Rudder and throttle                            yaw
-  false, true, false);    // No accelerator,but brakes and no steering
+I2cTxStruct txData = {"xxx", 236, 0};
+I2cRxStruct rxData;
+
+bool newTxData = false;
+bool newRxData = false;
+bool rqSent = false;
 
 
-// Set to true to test "Auto Send" mode or false to test "Manual Send" mode.
-//const bool testAutoSendMode = true;
-const bool testAutoSendMode = false;
+// I2C control stuff
+#include <Wire.h>
 
-const unsigned long gcCycleDelta = 1000;
-const unsigned long gcAnalogDelta = 25;
-const unsigned long gcButtonDelta = 500;
-unsigned long gNextTime = 0;
-unsigned int gCurrentStep = 0;
+const byte thisAddress = 9; // these need to be swapped for the other Arduino
+const byte otherAddress = 8;
 
-void testSingleButtonPush(unsigned int button)
-{
-  if (button > 0)
-  {
-    Joystick.releaseButton(button - 1);
-  }
-  if (button < 32)
-  {
-    Joystick.pressButton(button);
-  }
-}
-
-/*
-
-Lets not go there ...yet
-
-void testMultiButtonPush(unsigned int currentStep) 
-{
-  for (int button = 0; button < 32; button++)
-  {
-    if ((currentStep == 0) || (currentStep == 2))
-    {
-      if ((button % 2) == 0)
-      {
-        Joystick.pressButton(button);
-      } else if (currentStep != 2)
-      {
-        Joystick.releaseButton(button);
-      }
-    } // if ((currentStep == 0) || (currentStep == 2))
-    if ((currentStep == 1) || (currentStep == 2))
-    {
-      if ((button % 2) != 0)
-      {
-        Joystick.pressButton(button);
-      } else if (currentStep != 2)
-      {
-        Joystick.releaseButton(button);
-      }
-    } // if ((currentStep == 1) || (currentStep == 2))
-    if (currentStep == 3)
-    {
-      Joystick.releaseButton(button);
-    } // if (currentStep == 3)
-  } // for (int button = 0; button < 32; button++)
+//===========
+void requestEvent() {
+    Wire.write((byte*) &txData, sizeof(txData));
+    rqSent = true;
 }
 
-*/
-
-void testXYAxis(unsigned int currentStep)
-{
-  int xAxis;
-  int yAxis;
-  
-  if (currentStep < 256)
-  {
-    xAxis = currentStep - 127;
-    yAxis = -127;
-    Joystick.setXAxis(xAxis);
-    Joystick.setYAxis(yAxis);
-  } 
-  else if (currentStep < 512)
-  {
-    yAxis = currentStep - 256 - 127;
-    Joystick.setYAxis(yAxis);
-  }
-  else if (currentStep < 768)
-  {
-    xAxis = 128 - (currentStep - 512);
-    Joystick.setXAxis(xAxis);
-  }
-  else if (currentStep < 1024)
-  {
-    yAxis = 128 - (currentStep - 768);
-    Joystick.setYAxis(yAxis);
-  }
-  else if (currentStep < 1024 + 128)
-  {
-    xAxis = currentStep - 1024 - 127;
-    Joystick.setXAxis(xAxis);
-    Joystick.setYAxis(xAxis);
-  }
-}
-
-void testThrottleRudder(unsigned int value)
-{
-  Joystick.setThrottle(value);
-  Joystick.setRudder(255 - value);
-}
-
+//=================================
 void setup() {
+    Serial.begin(115200);
+    Serial.println("\nStarting I2C SlaveRespond demo\n");
+        // set up I2C
+    Wire.begin(thisAddress); // join i2c bus
+    Wire.onRequest(requestEvent); // register function to be called when a request arrives
 
-  Joystick.setXAxisRange(-127, 127);
-  Joystick.setYAxisRange(-127, 127);
-  Joystick.setZAxisRange(-127, 127);
-  Joystick.setThrottleRange(0, 255);
-  Joystick.setRudderRange(0, 255);
-  
-  if (testAutoSendMode)
-  {
-    Joystick.begin();
-  }
-  else
-  {
-    Joystick.begin(false);
-  }
-  
-  pinMode(A0, INPUT_PULLUP);
-  pinMode(LED_BUILTIN, OUTPUT);
 }
 
+//============
+void updateDataToSend() {
+    // update the data after the previous message has been
+    //    sent in response to the request
+    // this ensures the new data will ready when the next request arrives
+    if (rqSent == true) {
+        rqSent = false;
+        char sText[] = "SendB";
+        strcpy(txData.textA, sText);
+        txData.valA += 10;
+        if (txData.valA > 300) {
+            txData.valA = 236;
+        }
+        txData.valB = millis();
+    }
+}
+
+//============
 void loop() {
-
-  // System Disabled
-  if (digitalRead(A0) != 0)
-  {
-    // Turn indicator light off.
-    digitalWrite(LED_BUILTIN, 0);
-    return;
-  }
-
-  // Turn indicator light on.
-  digitalWrite(LED_BUILTIN, 1);
-  
-  if (millis() >= gNextTime)
-  {
-   
-    if (gCurrentStep < 33)
-    {
-      gNextTime = millis() + gcButtonDelta;
-      testSingleButtonPush(gCurrentStep);
-    } 
-    else if (gCurrentStep < 37)
-    {
-      gNextTime = millis() + gcButtonDelta;
-      testMultiButtonPush(gCurrentStep - 33);
+    // this bit checks if a message has been received
+    if (newRxData == true) {
+        newRxData = false;
     }
-    else if (gCurrentStep < (37 + 256))
-    {
-      gNextTime = millis() + gcAnalogDelta;
-      testThrottleRudder(gCurrentStep - 37);
-    }
-    else if (gCurrentStep < (37 + 256 + 1024 + 128))
-    {
-      gNextTime = millis() + gcAnalogDelta;
-      testXYAxis(gCurrentStep - (37 + 256));
-    }
-    
-    if (testAutoSendMode == false)
-    {
-      Joystick.sendState();
-    }
-    
-    gCurrentStep++;
-    if (gCurrentStep >= (37 + 256 + 1024 + 128))
-    {
-      gNextTime = millis() + gcCycleDelta;
-      gCurrentStep = 0;
-    }
-  }
+    // this function updates the data in txData
+    updateDataToSend();
+    // this function sends the data if one is ready to be sent
 }
