@@ -1,25 +1,28 @@
 #include "Arduino.h"
 #include <Wire.h>
 
+#define buttonCount 5
+
 // data to be sent and received
 struct I2cTxStruct
 {
-    byte Buttondata[26]; // 26
+    byte Buttondata[buttonCount]; // 26
 };
 
-bool Buttons[26]{
+bool Buttons[buttonCount]{
     0, 0, 0, 0, 0, /*hat0*/
-    0, 0, 0, 0, 0, /*hat1*/
-    0, 0, 0, 0, 0, /*hat2*/
-    0, 0, 0, 0, 0, /*hat3*/
-    0, 0,          /*trig*/
-    0,             /*pnky*/
-    0,             /*indx*/
-    0,             /*padd*/
-    0              /*Pckl*/
+
+//    0, 0, 0, 0, 0, /*hat1*/
+//    0, 0, 0, 0, 0, /*hat2*/
+//    0, 0, 0, 0, 0, /*hat3*/
+//    0, 0,          /*trig*/
+//    0,             /*pnky*/
+//    0,             /*indx*/
+//    0,             /*padd*/
+//    0              /*Pckl*/
 };
 
-I2cTxStruct txData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+I2cTxStruct txData = {0, 0, 0, 0, 0, /*0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0*/};
 
 bool newTxData = false;
 bool rqSent = false;
@@ -37,15 +40,14 @@ void requestEvent()
 
 void updateDataToSend()
 {
-    // update the data after the previous message has been
-    //    sent in response to the request
+    // update the data after the previous message has been sent
     // this ensures the new data will ready when the next request arrives
     if (rqSent == true)
     {
         rqSent = false;
-        for (int i = 0; i < 26; i++)
+        for (int i = 0; i < buttonCount; i++)
         {
-            txData.Buttondata[0] = Buttons[i];
+            txData.Buttondata[i] = Buttons[i];
         }
     }
 }
@@ -59,6 +61,10 @@ void checkHat(int HatNum,int NumOfDir){
 */
 void updateButtonStates(){
     //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
+    for (int i = 0; i < buttonCount; i++)
+    {
+        Buttons[i] = digitalRead(Buttons[i]);
+    }
 }
 
 
