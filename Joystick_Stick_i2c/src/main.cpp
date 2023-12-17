@@ -1,25 +1,26 @@
 #include "Arduino.h"
 #include <Wire.h>
 
-#define buttonCount 5
+#define buttonNum 5
+#define ColPinNum 2
 
 // data to be sent and received
 struct I2cTxStruct
 {
-    byte Buttondata[buttonCount]; // 26
+    byte Buttondata[buttonNum]; // 26
 };
 
-bool Buttons[buttonCount]{
+bool Buttons[buttonNum]{
     0, 0, 0, 0, 0, /*hat0*/
 
-//    0, 0, 0, 0, 0, /*hat1*/
-//    0, 0, 0, 0, 0, /*hat2*/
-//    0, 0, 0, 0, 0, /*hat3*/
-//    0, 0,          /*trig*/
-//    0,             /*pnky*/
-//    0,             /*indx*/
-//    0,             /*padd*/
-//    0              /*Pckl*/
+    //    0, 0, 0, 0, 0, /*hat1*/
+    //    0, 0, 0, 0, 0, /*hat2*/
+    //    0, 0, 0, 0, 0, /*hat3*/
+    //    0, 0,          /*trig*/
+    //    0,             /*pnky*/
+    //    0,             /*indx*/
+    //    0,             /*padd*/
+    //    0              /*Pckl*/
 };
 
 I2cTxStruct txData = {0, 0, 0, 0, 0, /*0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0*/};
@@ -30,6 +31,7 @@ bool rqSent = false;
 // I2C control stuff
 const byte thisAddress = 9; // these need to be swapped for the other Arduino
 const byte otherAddress = 8;
+
 
 //======I2C functions======
 void requestEvent()
@@ -45,7 +47,7 @@ void updateDataToSend()
     if (rqSent == true)
     {
         rqSent = false;
-        for (int i = 0; i < buttonCount; i++)
+        for (int i = 0; i < buttonNum; i++)
         {
             txData.Buttondata[i] = Buttons[i];
         }
@@ -59,23 +61,41 @@ void checkHat(int HatNum,int NumOfDir){
 
 }
 */
-void updateButtonStates(){
+void updateButtonStates()
+{
     //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
-    for (int i = 0; i < buttonCount; i++)
+    for (int i = 0; i < buttonNum; i++)
     {
-        Buttons[i] = digitalRead(Buttons[i]);
-    }
-}
+        Buttons[i] = digitalRead(Buttons[i+2]);
 
+        Serial.print("Byte ");
+        Serial.print(i);
+        Serial.print(" = ");
+        Serial.println(txData.Buttondata[i]);
+    }
+    Serial.println();
+    delay(1000);
+}
 
 
 
 //======Arduino======
 void setup()
 {
+    //  for testing only{
+    Serial.begin(9600);
+    //  }for testing only
+
     // set up I2C
     Wire.begin(thisAddress);      // join i2c bus
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
+
+    //  setup Arduino
+    pinMode(Buttons[0], INPUT_PULLUP);
+    pinMode(Buttons[1], INPUT_PULLUP);
+    pinMode(Buttons[2], INPUT_PULLUP);
+    pinMode(Buttons[3], INPUT_PULLUP);
+    pinMode(Buttons[4], INPUT_PULLUP);
 }
 
 void loop()
