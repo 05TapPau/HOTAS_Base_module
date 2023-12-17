@@ -9,58 +9,36 @@
 //   GNDs must also be connected
 //===================
 
-// data to be sent and received
+// data to be received
 struct I2cRxStruct
 {
-    bool textB[26];     // 26 bytes
-    byte padding[10];   // 10
-                        //------
-                        // 36
+    bool Button[26];  // 26 bytes
+                      //------
+                      // 36
 };
 
-int messageSize = 36;
+int messageSize = 26;
 
 I2cRxStruct rxData;
 
-bool newRxData = false;
-bool rqData = false;
-
-// I2C control stuff
-const byte thisAddress = 8; // these need to be swapped for the other Arduino
+const byte thisAddress = 8;
 const byte otherAddress = 9;
 
-// timing variables
-unsigned long prevUpdateTime = 0;
-unsigned long updateInterval = 500;
-
-//=================================
-void setup()
-{
-    // set up I2C
-    Wire.begin(thisAddress); // join i2c bus
-    //~ Wire.onReceive(receiveEvent); // register function to be called when a message arrives
+void setup(){
+    Wire.begin(thisAddress);
 }
 
-//=============
 void requestData()
 {
-    if (rqData == true){ // just one request following every Tx
-        byte stop = true;
-        byte numBytes = messageSize;
-        Wire.requestFrom(otherAddress, numBytes, stop);
-        // the request is immediately followed by the read for the response
-        Wire.readBytes((byte *)&rxData, numBytes);
-        newRxData = true;
-        rqData = false;
-    }
+    byte stop = true;
+    byte numBytes = messageSize;
+    Wire.requestFrom(otherAddress, numBytes, stop);
+    // the request is immediately followed by the read for the response
+    Wire.readBytes((byte *)&rxData, numBytes);
 }
 
-//============
 void loop()
 {
+    requestData();
     // this bit checks if a message has been received
-    if (newRxData == true){
-        newRxData = false;}
-    if (millis() - prevUpdateTime >= updateInterval){
-        requestData();prevUpdateTime = millis();}
 }

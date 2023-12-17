@@ -1,81 +1,81 @@
 #include "Arduino.h"
-//===================
-// Using I2C to send and receive structs between two Arduinos
-//   SDA is the data connection and SCL is the clock connection
-//   On an Uno  SDA is A4 and SCL is A5
-//   On an Mega SDA is 20 and SCL is 21
-//   GNDs must also be connected
-//===================
-
-
-// data to be sent and received
-struct I2cTxStruct {
-    bool textB[26];     // 26 bytes
-    byte padding[10];   // 10
-                        //------
-                        // 36
-};
-
-struct I2cRxStruct {
-    bool textB[26];     // 26 bytes
-    byte padding[10];   // 10
-                        //------
-                        // 36
-};
-
-I2cTxStruct txData = {"xxx", 236, 0};
-I2cRxStruct rxData;
-
-bool newTxData = false;
-bool newRxData = false;
-bool rqSent = false;
-
-
-// I2C control stuff
 #include <Wire.h>
 
+// data to be sent and received
+struct I2cTxStruct
+{
+    byte Buttondata[26]; // 26
+};
+
+bool Buttons[26]{
+    0, 0, 0, 0, 0, /*hat0*/
+    0, 0, 0, 0, 0, /*hat1*/
+    0, 0, 0, 0, 0, /*hat2*/
+    0, 0, 0, 0, 0, /*hat3*/
+    0, 0,          /*trig*/
+    0,             /*pnky*/
+    0,             /*indx*/
+    0,             /*padd*/
+    0              /*Pckl*/
+};
+
+I2cTxStruct txData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+bool newTxData = false;
+bool rqSent = false;
+
+// I2C control stuff
 const byte thisAddress = 9; // these need to be swapped for the other Arduino
 const byte otherAddress = 8;
 
-//===========
-void requestEvent() {
-    Wire.write((byte*) &txData, sizeof(txData));
+//======I2C functions======
+void requestEvent()
+{
+    Wire.write((byte *)&txData, sizeof(txData));
     rqSent = true;
 }
 
-//=================================
-void setup() {
-    Serial.begin(115200);
-    Serial.println("\nStarting I2C SlaveRespond demo\n");
-        // set up I2C
-    Wire.begin(thisAddress); // join i2c bus
-    Wire.onRequest(requestEvent); // register function to be called when a request arrives
-}
-
-//============
-void updateDataToSend() {
+void updateDataToSend()
+{
     // update the data after the previous message has been
     //    sent in response to the request
     // this ensures the new data will ready when the next request arrives
-    if (rqSent == true) {
+    if (rqSent == true)
+    {
         rqSent = false;
-        char sText[] = "SendB";
-        strcpy(txData.textA, sText);
-        txData.valA += 10;
-        if (txData.valA > 300) {
-            txData.valA = 236;
+        for (int i = 0; i < 26; i++)
+        {
+            txData.Buttondata[0] = Buttons[i];
         }
-        txData.valB = millis();
     }
 }
 
-//============
-void loop() {
-    // this bit checks if a message has been received
-    if (newRxData == true) {
-        newRxData = false;
-    }
+/*
+
+//======Buttonreadout======
+void checkHat(int HatNum,int NumOfDir){
+
+}
+*/
+void updateButtonStates(){
+    //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
+}
+
+
+
+
+//======Arduino======
+void setup()
+{
+    // set up I2C
+    Wire.begin(thisAddress);      // join i2c bus
+    Wire.onRequest(requestEvent); // register function to be called when a request arrives
+}
+
+void loop()
+{
     // this function updates the data in txData
+    updateButtonStates();
     updateDataToSend();
     // this function sends the data if one is ready to be sent
 }
