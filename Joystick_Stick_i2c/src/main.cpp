@@ -66,12 +66,12 @@ void updateButtonStates()
     //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
     for (int i = 0; i < buttonNum; i++)
     {
-        Buttons[i] = digitalRead(Buttons[i+2]);
+        Buttons[i] = digitalRead(i+2);
 
         Serial.print("Byte ");
         Serial.print(i);
         Serial.print(" = ");
-        Serial.println(txData.Buttondata[i]);
+        Serial.println(txData.Buttons[i]);
     }
     Serial.println();
     delay(1000);
