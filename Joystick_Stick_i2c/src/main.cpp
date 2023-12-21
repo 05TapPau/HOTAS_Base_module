@@ -1,7 +1,10 @@
 #include "Arduino.h"
 #include <Wire.h>
 
-#define buttonNum 26
+#define buttonNum   26
+#define EnableTrim  0
+#define EnableTMS   1
+#define EnableDMS   2
 
 // data to be sent and received
 struct I2cTxStruct
@@ -31,12 +34,31 @@ bool rqSent = false;
 const byte thisAddress = 9; // these need to be swapped for the other Arduino
 const byte otherAddress = 8;
 
-
 //======I2C functions======
 void requestEvent()
 {
     Wire.write((byte *)&txData, sizeof(txData));
     rqSent = true;
+}
+
+void CheckTrim()
+{
+    digitalWrite(EnableTrim,HIGH);
+
+    digitalWrite(EnableTrim,LOW);
+}
+void CheckTMS()
+{
+    digitalWrite(EnableTrim,HIGH);
+
+    digitalWrite(EnableTrim,LOW);
+
+}
+void CheckDMS()
+{
+    digitalWrite(EnableTrim,HIGH);
+    
+    digitalWrite(EnableTrim,LOW);
 }
 
 void updateDataToSend()
@@ -50,10 +72,18 @@ void updateDataToSend()
         {
             txData.Buttondata[i] = Buttons[i];
 
-            //oh noooo
-            //Buttons but fr this thime :/
+            // oh noooo
+            // Buttons but fr this thime :/
+            /*
+            Trim, TMS and DMS have to be enabled, cuz they run on one bus
+            For now this will be divided into three functions, so its easyer to find any errors
 
-            
+            go into function
+            enable the Hatswitch, read out its 5 pins, write them into the data that should be sent, disable the hat go to next and repeat
+            */
+            void CheckTrim();
+            void CheckTMS();
+            void CheckDMS();
         }
     }
 }
@@ -72,11 +102,9 @@ void updateButtonStates()
 
     for (int i = 0; i < buttonNum; i++)
     {
-        Buttons[i] = digitalRead(i+2);
+        Buttons[i] = digitalRead(i + 2);
     }
 }
-
-
 
 //======Arduino======
 void setup()
@@ -86,11 +114,15 @@ void setup()
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
 
     //  setup Arduino
-    pinMode(Buttons[0], INPUT_PULLUP);
-    pinMode(Buttons[1], INPUT_PULLUP);
-    pinMode(Buttons[2], INPUT_PULLUP);
     pinMode(Buttons[3], INPUT_PULLUP);
     pinMode(Buttons[4], INPUT_PULLUP);
+    pinMode(Buttons[5], INPUT_PULLUP);
+    pinMode(Buttons[6], INPUT_PULLUP);
+    pinMode(Buttons[7], INPUT_PULLUP);
+
+    pinMode(EnableTrim,OUTPUT);
+    pinMode(EnableTMS,OUTPUT);
+    pinMode(EnableDMS,OUTPUT);
 }
 
 void loop()
