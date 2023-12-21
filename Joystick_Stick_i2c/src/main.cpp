@@ -22,7 +22,7 @@ bool Buttons[buttonNum]{
     0              /*Pckl*/
 };
 
-I2cTxStruct txData = {0, 0, 0, 0, 0, /*0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0*/};
+I2cTxStruct txData = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 bool newTxData = false;
 bool rqSent = false;
@@ -49,6 +49,11 @@ void updateDataToSend()
         for (int i = 0; i < buttonNum; i++)
         {
             txData.Buttondata[i] = Buttons[i];
+
+            //oh noooo
+            //Buttons but fr this thime :/
+
+            
         }
     }
 }
@@ -60,6 +65,7 @@ void checkHat(int HatNum,int NumOfDir){
 
 }
 */
+
 void updateButtonStates()
 {
     //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
@@ -67,18 +73,7 @@ void updateButtonStates()
     for (int i = 0; i < buttonNum; i++)
     {
         Buttons[i] = digitalRead(i+2);
-
-/*
-        Serial.print("Byte ");
-        Serial.print(i);
-        Serial.print(" = ");
-        Serial.println(txData.Buttondata[i]);
-*/
     }
-    /*
-    Serial.println();
-    delay(1000);
-    */
 }
 
 
@@ -86,10 +81,6 @@ void updateButtonStates()
 //======Arduino======
 void setup()
 {
-    //  for testing only{
-    Serial.begin(9600);
-    //  }for testing only
-
     // set up I2C
     Wire.begin(thisAddress);      // join i2c bus
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
