@@ -1,8 +1,7 @@
 #include "Arduino.h"
 #include <Wire.h>
 
-#define buttonNum 5
-#define ColPinNum 2
+#define buttonNum 26
 
 // data to be sent and received
 struct I2cTxStruct
@@ -13,14 +12,14 @@ struct I2cTxStruct
 bool Buttons[buttonNum]{
     0, 0, 0, 0, 0, /*hat0*/
 
-    //    0, 0, 0, 0, 0, /*hat1*/
-    //    0, 0, 0, 0, 0, /*hat2*/
-    //    0, 0, 0, 0, 0, /*hat3*/
-    //    0, 0,          /*trig*/
-    //    0,             /*pnky*/
-    //    0,             /*indx*/
-    //    0,             /*padd*/
-    //    0              /*Pckl*/
+    0, 0, 0, 0, 0, /*hat1*/
+    0, 0, 0, 0, 0, /*hat2*/
+    0, 0, 0, 0, 0, /*hat3*/
+    0, 0,          /*trig*/
+    0,             /*pnky*/
+    0,             /*indx*/
+    0,             /*padd*/
+    0              /*Pckl*/
 };
 
 I2cTxStruct txData = {0, 0, 0, 0, 0, /*0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0*/};
@@ -64,17 +63,22 @@ void checkHat(int HatNum,int NumOfDir){
 void updateButtonStates()
 {
     //      void checkHat();            should i get bored i can code this out further so the hats are contained within one function
+
     for (int i = 0; i < buttonNum; i++)
     {
         Buttons[i] = digitalRead(i+2);
 
+/*
         Serial.print("Byte ");
         Serial.print(i);
         Serial.print(" = ");
-        Serial.println(txData.Buttons[i]);
+        Serial.println(txData.Buttondata[i]);
+*/
     }
+    /*
     Serial.println();
     delay(1000);
+    */
 }
 
 
