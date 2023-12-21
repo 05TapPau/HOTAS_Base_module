@@ -43,23 +43,41 @@ void requestEvent()
 
 
 //      Change the schematic and board to the requiered pull ups on the arduino side, right now its still on a pulldown config
+
+void CheckHats(int HatNum){//requires the number of the Hat wich equals to the Enable pin of the Hatswitch
+
+}
+
 void CheckTrim()
 {
     digitalWrite(EnableTrim,HIGH);
-
+    digitalRead(Buttons[3]);
+    digitalRead(Buttons[4]);
+    digitalRead(Buttons[5]);
+    digitalRead(Buttons[6]);
+    digitalRead(Buttons[7]);
     digitalWrite(EnableTrim,LOW);
 }
 void CheckTMS()
 {
     digitalWrite(EnableTrim,HIGH);
 
+    digitalRead(Buttons[3]);
+    digitalRead(Buttons[4]);
+    digitalRead(Buttons[5]);
+    digitalRead(Buttons[6]);
+    digitalRead(Buttons[7]);
     digitalWrite(EnableTrim,LOW);
-
 }
 void CheckDMS()
 {
     digitalWrite(EnableTrim,HIGH);
 
+    digitalRead(Buttons[3]);
+    digitalRead(Buttons[4]);
+    digitalRead(Buttons[5]);
+    digitalRead(Buttons[6]);
+    digitalRead(Buttons[7]);
     digitalWrite(EnableTrim,LOW);
 }
 
@@ -86,6 +104,7 @@ void updateDataToSend()
             void CheckTrim();
             void CheckTMS();
             void CheckDMS();
+            void CheckHats();
         }
     }
 }
