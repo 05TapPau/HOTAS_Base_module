@@ -41,6 +41,8 @@ void requestEvent()
     rqSent = true;
 }
 
+
+//      Change the schematic and board to the requiered pull ups on the arduino side, right now its still on a pulldown config
 void CheckTrim()
 {
     digitalWrite(EnableTrim,HIGH);
@@ -57,7 +59,7 @@ void CheckTMS()
 void CheckDMS()
 {
     digitalWrite(EnableTrim,HIGH);
-    
+
     digitalWrite(EnableTrim,LOW);
 }
 
