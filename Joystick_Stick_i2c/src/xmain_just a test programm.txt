@@ -1,0 +1,79 @@
+#include <Arduino.h>
+
+#define EnableTrim 2
+#define EnableTMS 3
+#define EnableDMS 4
+#define buttonCount 5
+
+bool Buttons[]{
+    0,0,0,0,0
+};
+
+void CheckTrim()
+{
+    digitalWrite(EnableTrim, LOW);
+    Buttons[0] = digitalRead(5);
+    Buttons[1] = digitalRead(6);
+    Buttons[2] = digitalRead(7);
+    Buttons[3] = digitalRead(8);
+    Buttons[4] = digitalRead(9);
+    
+    delay(333);
+    digitalWrite(EnableTrim, HIGH);
+}
+void CheckTMS()
+{
+    digitalWrite(EnableTMS, LOW);
+    Buttons[5] = digitalRead(5);
+    Buttons[6] = digitalRead(6);
+    Buttons[7] = digitalRead(7);
+    Buttons[8] = digitalRead(8);
+    Buttons[9] = digitalRead(9);
+
+    delay(333);
+    digitalWrite(EnableTMS, HIGH);
+}
+void CheckDMS()
+{
+    digitalWrite(EnableDMS, LOW);
+    Buttons[10] = digitalRead(5);
+    Buttons[11] = digitalRead(6);
+    Buttons[12] = digitalRead(7);
+    Buttons[13] = digitalRead(8);
+    Buttons[14] = digitalRead(9);
+
+    delay(333);
+    digitalWrite(EnableDMS, HIGH);
+}
+
+void setup(){
+    //  setup Arduino
+    pinMode(3, INPUT_PULLUP);
+    pinMode(4, INPUT_PULLUP);
+    pinMode(5, INPUT_PULLUP);
+    pinMode(6, INPUT_PULLUP);
+    pinMode(7, INPUT_PULLUP);
+    pinMode(8, INPUT_PULLUP);
+    pinMode(9, INPUT_PULLUP);
+
+    pinMode(EnableTrim, OUTPUT);
+    pinMode(EnableTMS, OUTPUT);
+    pinMode(EnableDMS, OUTPUT);
+
+    Serial.begin(9600);
+}
+
+void loop(){
+    CheckTrim();
+    CheckTMS();
+    CheckDMS();
+
+    for (int i = 0; i < 5; i++)
+    {
+        Serial.print("Byte ");
+        Serial.print(i);
+        Serial.print(" = ");
+        Serial.println(Buttons[i]);
+    }
+    Serial.println();
+}

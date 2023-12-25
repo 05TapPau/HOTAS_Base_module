@@ -1,0 +1,152 @@
+#include <Arduino.h>
+#include "Wire.h"
+#include "Joystick.h"
+
+Joystick_ Base_module(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
+  26, 0,                  // Button Count, Hat Switch Count                 32 possible buttons but no hatswitches
+  true, true, false,      // X and Y, Z Axis                                aka roll and pitch
+  false, false, false,      // Rx, Ry, Rz
+  false, true,             // Rudder and throttle                            yaw
+  false, false, false);    // accelerator,brakes and steering
+
+
+const unsigned long gcCycleDelta = 1000;
+const unsigned long gcAnalogDelta = 25;
+const unsigned long gcButtonDelta = 500;
+unsigned long gNextTime = 0;
+unsigned int gCurrentStep = 0;
+
+void testSingleButtonPush(unsigned int button)
+{
+  if (button > 0)
+  {
+    Base_module.releaseButton(button - 1);
+  }
+  if (button < 32)
+  {
+    Base_module.pressButton(button);
+  }
+}
+
+/*
+
+Lets not go there ...yet
+
+void testMultiButtonPush(unsigned int currentStep) 
+{
+  for (int button = 0; button < 32; button++)
+  {
+    if ((currentStep == 0) || (currentStep == 2))
+    {
+      if ((button % 2) == 0)
+      {
+        Base_module.pressButton(button);
+      } else if (currentStep != 2)
+      {
+        Base_module.releaseButton(button);
+      }
+    } // if ((currentStep == 0) || (currentStep == 2))
+    if ((currentStep == 1) || (currentStep == 2))
+    {
+      if ((button % 2) != 0)
+      {
+        Base_module.pressButton(button);
+      } else if (currentStep != 2)
+      {
+        Base_module.releaseButton(button);
+      }
+    } // if ((currentStep == 1) || (currentStep == 2))
+    if (currentStep == 3)
+    {
+      Base_module.releaseButton(button);
+    } // if (currentStep == 3)
+  } // for (int button = 0; button < 32; button++)
+}
+
+*/
+
+void testXYAxis(unsigned int currentStep)
+{
+  int xAxis;
+  int yAxis;
+  
+  if (currentStep < 256)
+  {
+    xAxis = currentStep - 127;
+    yAxis = -127;
+    Base_module.setXAxis(xAxis);
+    Base_module.setYAxis(yAxis);
+  } 
+  else if (currentStep < 512)
+  {
+    yAxis = currentStep - 256 - 127;
+    Base_module.setYAxis(yAxis);
+  }
+  else if (currentStep < 768)
+  {
+    xAxis = 128 - (currentStep - 512);
+    Base_module.setXAxis(xAxis);
+  }
+  else if (currentStep < 1024)
+  {
+    yAxis = 128 - (currentStep - 768);
+    Base_module.setYAxis(yAxis);
+  }
+  else if (currentStep < 1024 + 128)
+  {
+    xAxis = currentStep - 1024 - 127;
+    Base_module.setXAxis(xAxis);
+    Base_module.setYAxis(xAxis);
+  }
+}
+
+void testThrottleRudder(unsigned int value)
+{
+  Base_module.setThrottle(value);
+  Base_module.setRudder(255 - value);
+}
+
+void setup() {
+
+  Base_module.setXAxisRange(-127, 127);
+  Base_module.setYAxisRange(-127, 127);
+  Base_module.setZAxisRange(-127, 127);
+  Base_module.setThrottleRange(0, 255);
+  Base_module.setRudderRange(0, 255);
+  
+  Base_module.begin();
+  
+  pinMode(A0, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+  if (millis() >= gNextTime)
+  {
+   
+    if (gCurrentStep < 33)
+    {
+      gNextTime = millis() + gcButtonDelta;
+      testSingleButtonPush(gCurrentStep);
+    } 
+    else if (gCurrentStep < (37 + 256))
+    {
+      gNextTime = millis() + gcAnalogDelta;
+      testThrottleRudder(gCurrentStep - 37);
+    }
+    else if (gCurrentStep < (37 + 256 + 1024 + 128))
+    {
+      gNextTime = millis() + gcAnalogDelta;
+      testXYAxis(gCurrentStep - (37 + 256));
+    }
+    
+    gCurrentStep++;
+    if (gCurrentStep >= (37 + 256 + 1024 + 128))
+    {
+      gNextTime = millis() + gcCycleDelta;
+      gCurrentStep = 0;
+    }
+    
+    Base_module.sendState();
+  }
+}

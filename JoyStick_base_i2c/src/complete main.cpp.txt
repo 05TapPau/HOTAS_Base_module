@@ -1,19 +1,18 @@
 #include "Arduino.h"
 #include <Wire.h>
+#include <Joystick.h>
 
-#define buttonCount 5
+#define buttonCount 26
 
+//======I2C-All-Code======
 // data to be received
 struct I2cRxStruct
 {
     bool Button[buttonCount]; // 26 bytes one byte for on button kinda wast of mem but who cares
 };
-
 I2cRxStruct rxData;
-
 const byte BaseAddress = 8;
 const byte StickAddress = 9;
-
 // prep for future ideas ?!
 const byte ThrottleAddress = 10;
 
@@ -25,6 +24,8 @@ void requestData()
     Wire.requestFrom(StickAddress, numBytes, stop);
     // the request is immediately followed by the read for the response
     Wire.readBytes((byte *)&rxData, numBytes);
+
+    /*ignore this, just for testing
     for (int i = 0; i < buttonCount; i++)
     {
         Serial.print("Byte ");
@@ -34,18 +35,30 @@ void requestData()
     }
     Serial.println();
     delay(500);
+    */
 }
 
-//======Joystick======
+//======Joystick-All-Code======
+Joystick_ Base_module( //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
+    JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS,
+    26, 0,               //  26  Buttons total on flightstick (might increas with an addition of a throttle); 0 hatswitches //i know i have hats on there butt i read them out as buttons
+    true, true, false,   //  X,Y Axies used (roll and pitch yaw at some point with rudders maybe?)
+    false, false, false, //  no "right" X,Y, and Z
+    false, false, false, //  rudder, Throttle and accelorator
+    false, false);       //  brakes and steering
+
 void hotas()
 {
     //      Do da Hotas shit
 }
 
-//======Arduino======
+//======Arduino-All-Code======
 void setup()
 {
-    Serial.begin(9600);
+    Base_module.setXAxisRange(0,1024);
+    Base_module.setYAxisRange(0,1024);
+    Base_module.begin();
+    
     Wire.begin(BaseAddress);
 }
 
