@@ -11,15 +11,18 @@ struct I2cRxStruct
 
 I2cRxStruct rxData;
 
-const byte thisAddress = 8;
-const byte otherAddress = 9;
+const byte BaseAddress = 8;
+const byte StickAddress = 9;
+
+// prep for future ideas ?!
+const byte ThrottleAddress = 10;
 
 //======I2C======
 void requestData()
 {
     byte stop = true;
     byte numBytes = buttonCount;
-    Wire.requestFrom(otherAddress, numBytes, stop);
+    Wire.requestFrom(StickAddress, numBytes, stop);
     // the request is immediately followed by the read for the response
     Wire.readBytes((byte *)&rxData, numBytes);
     for (int i = 0; i < buttonCount; i++)
@@ -43,7 +46,7 @@ void hotas()
 void setup()
 {
     Serial.begin(9600);
-    Wire.begin(thisAddress);
+    Wire.begin(BaseAddress);
 }
 
 void loop()
