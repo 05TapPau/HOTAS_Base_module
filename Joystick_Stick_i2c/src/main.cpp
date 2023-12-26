@@ -2,9 +2,9 @@
 #include <Wire.h>
 
 #define buttonNum 26
-#define EnableTrim 0
-#define EnableTMS 1
-#define EnableDMS 2
+#define EnableTrim 2
+#define EnableTMS 3
+#define EnableDMS 4
 
 
 // data to be sent and received
@@ -67,31 +67,31 @@ void CheckHats(int HatNum)
     {
     case 0:
         digitalWrite(EnableTrim, HIGH);
-        digitalRead(Buttons[3]);
-        digitalRead(Buttons[4]);
         digitalRead(Buttons[5]);
         digitalRead(Buttons[6]);
         digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
         digitalWrite(EnableTrim, LOW);
         break;
 
     case 1:
         digitalWrite(EnableTMS, HIGH);
-        digitalRead(Buttons[3]);
-        digitalRead(Buttons[4]);
         digitalRead(Buttons[5]);
         digitalRead(Buttons[6]);
         digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
         digitalWrite(EnableTMS, LOW);
         break;
 
     case 2:
         digitalWrite(EnableDMS, HIGH);
-        digitalRead(Buttons[3]);
-        digitalRead(Buttons[4]);
         digitalRead(Buttons[5]);
         digitalRead(Buttons[6]);
         digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
         digitalWrite(EnableDMS, LOW);
         break;
 
@@ -108,8 +108,6 @@ void CheckTrim()
     Buttons[2] = digitalRead(7);
     Buttons[3] = digitalRead(8);
     Buttons[4] = digitalRead(9);
-    
-    delay(333);
     digitalWrite(EnableTrim, HIGH);
 }
 void CheckTMS()
@@ -120,8 +118,6 @@ void CheckTMS()
     Buttons[7] = digitalRead(7);
     Buttons[8] = digitalRead(8);
     Buttons[9] = digitalRead(9);
-
-    delay(333);
     digitalWrite(EnableTMS, HIGH);
 }
 void CheckDMS()
@@ -132,8 +128,6 @@ void CheckDMS()
     Buttons[12] = digitalRead(7);
     Buttons[13] = digitalRead(8);
     Buttons[14] = digitalRead(9);
-
-    delay(333);
     digitalWrite(EnableDMS, HIGH);
 }
 
@@ -166,6 +160,20 @@ void updateButtonStates()
     CheckDMS();
 }
 
+
+void DeBug(){
+    for (int i = 0; i < buttonNum; i++)
+    {
+        Serial.print("Byte: ");
+        Serial.print(i);
+        Serial.print(" => ");
+        Serial.println(Buttons[i]);
+    }
+    Serial.println();
+    delay(1000);
+}
+
+
 //======Arduino======
 void setup()
 {
@@ -173,6 +181,10 @@ void setup()
     Wire.begin(thisAddress);      // join i2c bus
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
                                   //    Wire.onRequest(requestEventNoStruct);   // register function to be called when a request arrives trying without an array
+
+
+    //  Debuging
+    Serial.begin(9600);
 
     //  setup Arduino
     pinMode(3, INPUT_PULLUP);
@@ -182,6 +194,16 @@ void setup()
     pinMode(7, INPUT_PULLUP);
     pinMode(8, INPUT_PULLUP);
     pinMode(9, INPUT_PULLUP);
+    pinMode(10, INPUT_PULLUP);
+    pinMode(11, INPUT_PULLUP);
+    pinMode(12, INPUT_PULLUP);
+    pinMode(13, INPUT_PULLUP);
+    pinMode(A0, INPUT_PULLUP);
+    pinMode(A1, INPUT_PULLUP);
+    pinMode(A2, INPUT_PULLUP);
+    pinMode(A3, INPUT_PULLUP);
+    pinMode(A6, INPUT_PULLUP);
+    pinMode(A7, INPUT_PULLUP);
 
     pinMode(EnableTrim, OUTPUT);
     pinMode(EnableTMS, OUTPUT);
@@ -192,6 +214,7 @@ void loop()
 {
     // this function updates the data in txData
     updateButtonStates();
+    DeBug(); 
     updateDataToSend();
     // this function sends the data if one is ready to be sent
 }
