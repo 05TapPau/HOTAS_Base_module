@@ -1,0 +1,25 @@
+#include "Arduino.h"
+
+void setup(){
+    Serial.begin(115200);
+
+    pinMode(A0, INPUT_PULLUP);
+    pinMode(A1, INPUT_PULLUP);
+    pinMode(A2, INPUT_PULLUP);
+    pinMode(A3, INPUT_PULLUP);
+    pinMode(A6, INPUT);
+    pinMode(A7, INPUT);
+}
+void loop(){
+    Serial.println(digitalRead(A0));
+    Serial.println(digitalRead(A1));
+    Serial.println(digitalRead(A2));
+    Serial.println(digitalRead(A3));
+    Serial.println(analogRead(A6));
+    Serial.println(analogRead(A7));
+
+
+    // fuck sake my arduino has no digital read on A6/A7 y? idk
+    Serial.println();
+    delay(2000);
+}

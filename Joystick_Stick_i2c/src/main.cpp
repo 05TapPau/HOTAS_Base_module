@@ -6,7 +6,6 @@
 #define EnableTMS 3
 #define EnableDMS 4
 
-
 // data to be sent and received
 struct I2cTxStruct
 {
@@ -102,7 +101,7 @@ void CheckHats(int HatNum)
 
 void CheckTrim()
 {
-    digitalWrite(EnableTrim, LOW	);
+    digitalWrite(EnableTrim, LOW);
     Buttons[0] = digitalRead(5);
     Buttons[1] = digitalRead(6);
     Buttons[2] = digitalRead(7);
@@ -149,19 +148,38 @@ void updateButtonStates()
 {
     //      void checkHat();            should i get bored i could code this out further so the hats are contained within one function
     //      haha i got bored :)         CheckHats(1); gotta give it a int so it knows what hat to check
-/*
-        Trim, TMS and DMS have to be enabled, cuz they run on one bus
-        For now this will be divided into three functions, so its easyer to find any errors
-        go into function
-        enable the Hatswitch, read out its 5 pins, write them into the data that should be sent, disable the hat go to next and repeat
-*/
+    /*
+            Trim, TMS and DMS have to be enabled, cuz they run on one bus
+            For now this will be divided into three functions, so its easyer to find any errors
+            go into function
+            enable the Hatswitch, read out its 5 pins, write them into the data that should be sent, disable the hat go to next and repeat
+    */
     CheckTrim();
     CheckTMS();
     CheckDMS();
+
+    Buttons[15] = digitalRead(10);
+    Buttons[16] = digitalRead(11);
+    Buttons[17] = digitalRead(12);
+    Buttons[18] = !digitalRead(13);
+    Buttons[19] = digitalRead(A0);
+    Buttons[20] = digitalRead(A1);
+    Buttons[21] = digitalRead(A2);
+    Buttons[22] = digitalRead(A3);
+    if (analogRead(A6)>512)
+        Buttons[23] = 1;
+    else
+        Buttons[23] = 0;
+
+    if (analogRead(A7)>512)
+        Buttons[24] = 1;
+    else
+        Buttons[24] = 0;
+    // Buttons[25] = digitalRead(0/1);
 }
 
-
-void DeBug(){
+void DeBug()
+{
     for (int i = 0; i < buttonNum; i++)
     {
         Serial.print("Byte: ");
@@ -170,9 +188,8 @@ void DeBug(){
         Serial.println(Buttons[i]);
     }
     Serial.println();
-    delay(1000);
+    delay(2000);
 }
-
 
 //======Arduino======
 void setup()
@@ -182,9 +199,8 @@ void setup()
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
                                   //    Wire.onRequest(requestEventNoStruct);   // register function to be called when a request arrives trying without an array
 
-
     //  Debuging
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     //  setup Arduino
     pinMode(3, INPUT_PULLUP);
@@ -214,7 +230,7 @@ void loop()
 {
     // this function updates the data in txData
     updateButtonStates();
-    DeBug(); 
+    DeBug();
     updateDataToSend();
     // this function sends the data if one is ready to be sent
 }
