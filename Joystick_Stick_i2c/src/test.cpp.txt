@@ -23,3 +23,56 @@ void loop(){
     Serial.println();
     delay(2000);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+{ // requires the number of the Hat wich equals to the Enable pin of the Hatswitch
+    switch (HatNum)
+    {
+    case 0:
+        digitalWrite(EnableTrim, HIGH);
+        digitalRead(Buttons[5]);
+        digitalRead(Buttons[6]);
+        digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
+        digitalWrite(EnableTrim, LOW);
+        break;
+
+    case 1:
+        digitalWrite(EnableTMS, HIGH);
+        digitalRead(Buttons[5]);
+        digitalRead(Buttons[6]);
+        digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
+        digitalWrite(EnableTMS, LOW);
+        break;
+
+    case 2:
+        digitalWrite(EnableDMS, HIGH);
+        digitalRead(Buttons[5]);
+        digitalRead(Buttons[6]);
+        digitalRead(Buttons[7]);
+        digitalRead(Buttons[8]);
+        digitalRead(Buttons[9]);
+        digitalWrite(EnableDMS, LOW);
+        break;
+
+    default:
+        break;
+    }
+}
+*/

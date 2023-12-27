@@ -50,111 +50,27 @@ void hotas()
     Base_module.setButton(2, rxData.Button[2]);
     Base_module.setButton(3, rxData.Button[3]);
     Base_module.setButton(4, rxData.Button[4]);
-/*
-    for (int index = 0; index < 26; index++)
-    {
-        currentButtonState = !rxData.Button[index];
-        if (currentButtonState != LastButtonState[index])
-        {
-            switch (index)
-            {
-            case 0:
-                Base_module.setButton(0, currentButtonState);
-                break;
-            case 1:
-                Base_module.setButton(1, currentButtonState);
-                break;
-            case 2:
-                Base_module.setButton(2, currentButtonState);
-                break;
-            case 3:
-                Base_module.setButton(3, currentButtonState);
-                break;
-            case 4:
-                Base_module.setButton(4, currentButtonState);
-                break;
-            case 5:
-                Base_module.setButton(5, currentButtonState);
-                break;
-            case 6:
-                Base_module.setButton(6, currentButtonState);
-                break;
-            case 7:
-                Base_module.setButton(7, currentButtonState);
-                break;
-            case 8:
-                Base_module.setButton(8, currentButtonState);
-                break;
-            case 9:
-                Base_module.setButton(9, currentButtonState);
-                break;
-            case 10:
-                Base_module.setButton(10, currentButtonState);
-                break;
-            case 11:
-                Base_module.setButton(11, currentButtonState);
-                break;
-            case 12:
-                Base_module.setButton(12, currentButtonState);
-                break;
-            case 13:
-                Base_module.setButton(13, currentButtonState);
-                break;
-            case 14:
-                Base_module.setButton(14, currentButtonState);
-                break;
-            case 15:
-                Base_module.setButton(15, currentButtonState);
-                break;
-            case 16:
-                Base_module.setButton(16, currentButtonState);
-                break;
-            case 17:
-                Base_module.setButton(17, currentButtonState);
-                break;
-            case 18:
-                Base_module.setButton(18, currentButtonState);
-                break;
-            case 19:
-                Base_module.setButton(19, currentButtonState);
-                break;
-            case 20:
-                Base_module.setButton(20, currentButtonState);
-                break;
-            case 21:
-                Base_module.setButton(21, currentButtonState);
-                break;
-            case 22:
-                Base_module.setButton(22, currentButtonState);
-                break;
-            case 23:
-                Base_module.setButton(23, currentButtonState);
-                break;
-            case 24:
-                Base_module.setButton(24, currentButtonState);
-                break;
-            case 25:
-                Base_module.setButton(25, currentButtonState);
-                break;
-            default:
-                break;
-            }
-        }
-    }
-*/
-}
-
-void DeBug()
-{
-    for (int i = 0; i < buttonCount; i++)
-    {
-        Serial.print("Byte: ");
-        Serial.print(i);
-        Serial.print(" => ");
-        Serial.println(rxData.Button[i]);
-    }
-    Serial.println();
-    delay(2000);
+    Base_module.setButton(5, rxData.Button[5]);
+    Base_module.setButton(6, rxData.Button[6]);
+    Base_module.setButton(7, rxData.Button[7]);
+    Base_module.setButton(8, rxData.Button[8]);
+    Base_module.setButton(9, rxData.Button[9]);
+    Base_module.setButton(10, rxData.Button[10]);
+    Base_module.setButton(11, rxData.Button[11]);
+    Base_module.setButton(12, rxData.Button[12]);
+    Base_module.setButton(13, rxData.Button[13]);
+    Base_module.setButton(14, rxData.Button[14]);
+    Base_module.setButton(15, rxData.Button[15]);
+    Base_module.setButton(16, rxData.Button[16]);
+    Base_module.setButton(17, rxData.Button[17]);
+    Base_module.setButton(18, rxData.Button[18]);
+    Base_module.setButton(19, rxData.Button[19]);
+    Base_module.setButton(20, rxData.Button[20]);
+    Base_module.setButton(21, rxData.Button[21]);
+    Base_module.setButton(22, rxData.Button[22]);
+    Base_module.setButton(23, rxData.Button[23]);
+    Base_module.setButton(24, rxData.Button[24]);
+    Base_module.setButton(25, rxData.Button[25]);
 }
 
 //======All-Arduino-Code======
@@ -163,9 +79,22 @@ void setup()
     //  I2C
     Wire.begin(BaseAddress);
 
+    //  Pins in use
     pinMode(A0, INPUT);
     pinMode(A1, INPUT);
     pinMode(A2, INPUT);
+
+    //  Pins not in use (remeber to check if you use Arduino pro micro(does not hjave all pins) or Arduino Micro)
+    pinMode(A3, OUTPUT);
+    pinMode(A4, OUTPUT);
+    pinMode(A5, OUTPUT);
+    pinMode(A6, OUTPUT);    // D4
+    pinMode(A7, OUTPUT);    // D6
+    pinMode(A8, OUTPUT);    // D8
+    pinMode(A9, OUTPUT);    // D9
+    pinMode(A10, OUTPUT);   // D10
+    pinMode(A11,OUTPUT);    // D12
+        //  and all  digital pins
 
     Base_module.begin();
     Base_module.setXAxisRange(0, 1023);
@@ -177,5 +106,4 @@ void loop()
 {
     hotas();
     requestData();
-    // DeBug();
 }

@@ -169,3 +169,97 @@ void loop()
     requestData();
     //hotas();
 }
+
+
+/*
+    for (int index = 0; index < 26; index++)
+    {
+        currentButtonState = !rxData.Button[index];
+        if (currentButtonState != LastButtonState[index])
+        {
+            switch (index)
+            {
+            case 0:
+                Base_module.setButton(0, currentButtonState);
+                break;
+            case 1:
+                Base_module.setButton(1, currentButtonState);
+                break;
+            case 2:
+                Base_module.setButton(2, currentButtonState);
+                break;
+            case 3:
+                Base_module.setButton(3, currentButtonState);
+                break;
+            case 4:
+                Base_module.setButton(4, currentButtonState);
+                break;
+            case 5:
+                Base_module.setButton(5, currentButtonState);
+                break;
+            case 6:
+                Base_module.setButton(6, currentButtonState);
+                break;
+            case 7:
+                Base_module.setButton(7, currentButtonState);
+                break;
+            case 8:
+                Base_module.setButton(8, currentButtonState);
+                break;
+            case 9:
+                Base_module.setButton(9, currentButtonState);
+                break;
+            case 10:
+                Base_module.setButton(10, currentButtonState);
+                break;
+            case 11:
+                Base_module.setButton(11, currentButtonState);
+                break;
+            case 12:
+                Base_module.setButton(12, currentButtonState);
+                break;
+            case 13:
+                Base_module.setButton(13, currentButtonState);
+                break;
+            case 14:
+                Base_module.setButton(14, currentButtonState);
+                break;
+            case 15:
+                Base_module.setButton(15, currentButtonState);
+                break;
+            case 16:
+                Base_module.setButton(16, currentButtonState);
+                break;
+            case 17:
+                Base_module.setButton(17, currentButtonState);
+                break;
+            case 18:
+                Base_module.setButton(18, currentButtonState);
+                break;
+            case 19:
+                Base_module.setButton(19, currentButtonState);
+                break;
+            case 20:
+                Base_module.setButton(20, currentButtonState);
+                break;
+            case 21:
+                Base_module.setButton(21, currentButtonState);
+                break;
+            case 22:
+                Base_module.setButton(22, currentButtonState);
+                break;
+            case 23:
+                Base_module.setButton(23, currentButtonState);
+                break;
+            case 24:
+                Base_module.setButton(24, currentButtonState);
+                break;
+            case 25:
+                Base_module.setButton(25, currentButtonState);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+*/

@@ -51,45 +51,6 @@ void requestEvent()
     rqSent = true;
 }
 
-/*
-{ // requires the number of the Hat wich equals to the Enable pin of the Hatswitch
-    switch (HatNum)
-    {
-    case 0:
-        digitalWrite(EnableTrim, HIGH);
-        digitalRead(Buttons[5]);
-        digitalRead(Buttons[6]);
-        digitalRead(Buttons[7]);
-        digitalRead(Buttons[8]);
-        digitalRead(Buttons[9]);
-        digitalWrite(EnableTrim, LOW);
-        break;
-
-    case 1:
-        digitalWrite(EnableTMS, HIGH);
-        digitalRead(Buttons[5]);
-        digitalRead(Buttons[6]);
-        digitalRead(Buttons[7]);
-        digitalRead(Buttons[8]);
-        digitalRead(Buttons[9]);
-        digitalWrite(EnableTMS, LOW);
-        break;
-
-    case 2:
-        digitalWrite(EnableDMS, HIGH);
-        digitalRead(Buttons[5]);
-        digitalRead(Buttons[6]);
-        digitalRead(Buttons[7]);
-        digitalRead(Buttons[8]);
-        digitalRead(Buttons[9]);
-        digitalWrite(EnableDMS, LOW);
-        break;
-
-    default:
-        break;
-    }
-}
-*/
 
 void CheckTrim()
 {
@@ -158,16 +119,8 @@ void updateButtonStates()
     Buttons[20] = digitalRead(A1);
     Buttons[21] = digitalRead(A2);
     Buttons[22] = digitalRead(A3);
-    if (analogRead(A6)>512)
-        Buttons[23] = 1;
-    else
-        Buttons[23] = 0;
-
-    if (analogRead(A7)>512)
-        Buttons[24] = 1;
-    else
-        Buttons[24] = 0;
-    // Buttons[25] = digitalRead(0/1);
+    (analogRead(A6)>512) ? Buttons[23] = 1 : Buttons[23] = 0;
+    (analogRead(A7)>512) ? Buttons[24] = 1 : Buttons[24] = 0;
 }
 
 //======Arduino======
@@ -176,16 +129,18 @@ void setup()
     // set up I2C
     Wire.begin(thisAddress);      // join i2c bus
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
-                                  //    Wire.onRequest(requestEventNoStruct);   // register function to be called when a request arrives trying without an array
 
     //  setup Arduino
-    pinMode(3, INPUT_PULLUP);
-    pinMode(4, INPUT_PULLUP);
+    pinMode(EnableTrim, OUTPUT);
+    pinMode(EnableTMS, OUTPUT);
+    pinMode(EnableDMS, OUTPUT);
+
     pinMode(5, INPUT_PULLUP);
     pinMode(6, INPUT_PULLUP);
     pinMode(7, INPUT_PULLUP);
     pinMode(8, INPUT_PULLUP);
     pinMode(9, INPUT_PULLUP);
+    
     pinMode(10, INPUT_PULLUP);
     pinMode(11, INPUT_PULLUP);
     pinMode(12, INPUT_PULLUP);
@@ -196,10 +151,6 @@ void setup()
     pinMode(A3, INPUT_PULLUP);
     pinMode(A6, INPUT);
     pinMode(A7, INPUT);
-
-    pinMode(EnableTrim, OUTPUT);
-    pinMode(EnableTMS, OUTPUT);
-    pinMode(EnableDMS, OUTPUT);
 }
 
 void loop()
