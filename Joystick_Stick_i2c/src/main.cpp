@@ -52,15 +52,6 @@ void requestEvent()
 }
 
 /*
-    //   try without struct straight from array
-void requestEventNoStruct()
-{
-    Wire.write((byte *)&Buttons, sizeof(Buttons));
-    rqSent = true;
-}
-*/
-
-void CheckHats(int HatNum)
 { // requires the number of the Hat wich equals to the Enable pin of the Hatswitch
     switch (HatNum)
     {
@@ -98,6 +89,7 @@ void CheckHats(int HatNum)
         break;
     }
 }
+*/
 
 void CheckTrim()
 {
@@ -178,19 +170,6 @@ void updateButtonStates()
     // Buttons[25] = digitalRead(0/1);
 }
 
-void DeBug()
-{
-    for (int i = 0; i < buttonNum; i++)
-    {
-        Serial.print("Byte: ");
-        Serial.print(i);
-        Serial.print(" => ");
-        Serial.println(Buttons[i]);
-    }
-    Serial.println();
-    delay(2000);
-}
-
 //======Arduino======
 void setup()
 {
@@ -198,9 +177,6 @@ void setup()
     Wire.begin(thisAddress);      // join i2c bus
     Wire.onRequest(requestEvent); // register function to be called when a request arrives
                                   //    Wire.onRequest(requestEventNoStruct);   // register function to be called when a request arrives trying without an array
-
-    //  Debuging
-    Serial.begin(115200);
 
     //  setup Arduino
     pinMode(3, INPUT_PULLUP);
@@ -230,7 +206,5 @@ void loop()
 {
     // this function updates the data in txData
     updateButtonStates();
-    //DeBug();
     updateDataToSend();
-    // this function sends the data if one is ready to be sent
 }

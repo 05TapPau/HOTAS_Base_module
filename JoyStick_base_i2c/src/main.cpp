@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include <Wire.h>
-//#include <Joystick.h>
+#include <Joystick.h>
 
 #define buttonCount 26
 
@@ -18,7 +18,7 @@ I2cRxStruct rxData;
 const byte BaseAddress = 8;
 const byte StickAddress = 9;
 // prep for future ideas ?!
-const byte ThrottleAddress = 10;
+// const byte ThrottleAddress = 10;
 
 //======I2C======
 void requestData()
@@ -30,11 +30,9 @@ void requestData()
     Wire.readBytes((byte *)&rxData, numBytes);
 }
 
-
-/*
 //======Joystick-All-Code======
 Joystick_ Base_module( //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
-    JOYSTICK_DEFAULT_REPORT_ID,JOYSTICK_TYPE_GAMEPAD,
+    JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD,
     32, 0,               //  26  Buttons total on flightstick (might increas with an addition of a throttle); 0 hatswitches //i know i have hats on there butt i read them out as buttons
     true, true, false,   //  X,Y Axies used (roll and pitch yaw at some point with rudders maybe?)
     false, false, false, //  no "right" X,Y, and Z
@@ -42,11 +40,17 @@ Joystick_ Base_module( //  name the axies down below whatever you want, most gam
     false, false);       //  brakes and steering
 
 void hotas()
-{   //      Do da Hotas shit
+{ //      Do da Hotas shit
     Base_module.setYAxis(analogRead(A0));
     Base_module.setXAxis(analogRead(A1));
     Base_module.setThrottle(analogRead(A2));
 
+    Base_module.setButton(0, rxData.Button[0]);
+    Base_module.setButton(1, rxData.Button[1]);
+    Base_module.setButton(2, rxData.Button[2]);
+    Base_module.setButton(3, rxData.Button[3]);
+    Base_module.setButton(4, rxData.Button[4]);
+/*
     for (int index = 0; index < 26; index++)
     {
         currentButtonState = !rxData.Button[index];
@@ -137,9 +141,8 @@ void hotas()
             }
         }
     }
-}
 */
-
+}
 
 void DeBug()
 {
@@ -154,26 +157,25 @@ void DeBug()
     delay(2000);
 }
 
-
 //======All-Arduino-Code======
 void setup()
 {
-    pinMode(A0,INPUT);
-    pinMode(A1,INPUT);
-    pinMode(A2,INPUT);
+    //  I2C
+    Wire.begin(BaseAddress);
 
-    Serial.begin(6900);
-/*
+    pinMode(A0, INPUT);
+    pinMode(A1, INPUT);
+    pinMode(A2, INPUT);
+
     Base_module.begin();
     Base_module.setXAxisRange(0, 1023);
     Base_module.setYAxisRange(0, 1023);
     Base_module.setThrottleRange(0, 1023);
-*/
 }
 
 void loop()
 {
-    //hotas();
+    hotas();
     requestData();
-    DeBug();
+    // DeBug();
 }
