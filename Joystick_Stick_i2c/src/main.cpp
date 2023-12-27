@@ -218,8 +218,8 @@ void setup()
     pinMode(A1, INPUT_PULLUP);
     pinMode(A2, INPUT_PULLUP);
     pinMode(A3, INPUT_PULLUP);
-    pinMode(A6, INPUT_PULLUP);
-    pinMode(A7, INPUT_PULLUP);
+    pinMode(A6, INPUT);
+    pinMode(A7, INPUT);
 
     pinMode(EnableTrim, OUTPUT);
     pinMode(EnableTMS, OUTPUT);
@@ -230,7 +230,7 @@ void loop()
 {
     // this function updates the data in txData
     updateButtonStates();
-    DeBug();
+    //DeBug();
     updateDataToSend();
     // this function sends the data if one is ready to be sent
 }

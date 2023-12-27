@@ -1,6 +1,6 @@
 #include "Arduino.h"
 #include <Wire.h>
-#include <Joystick.h>
+//#include <Joystick.h>
 
 #define buttonCount 26
 
@@ -31,7 +31,7 @@ void requestData()
 }
 
 
-
+/*
 //======Joystick-All-Code======
 Joystick_ Base_module( //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
     JOYSTICK_DEFAULT_REPORT_ID,JOYSTICK_TYPE_GAMEPAD,
@@ -138,7 +138,21 @@ void hotas()
         }
     }
 }
+*/
 
+
+void DeBug()
+{
+    for (int i = 0; i < buttonCount; i++)
+    {
+        Serial.print("Byte: ");
+        Serial.print(i);
+        Serial.print(" => ");
+        Serial.println(rxData.Button[i]);
+    }
+    Serial.println();
+    delay(2000);
+}
 
 
 //======All-Arduino-Code======
@@ -148,13 +162,18 @@ void setup()
     pinMode(A1,INPUT);
     pinMode(A2,INPUT);
 
+    Serial.begin(6900);
+/*
     Base_module.begin();
     Base_module.setXAxisRange(0, 1023);
     Base_module.setYAxisRange(0, 1023);
     Base_module.setThrottleRange(0, 1023);
+*/
 }
 
 void loop()
 {
-    hotas();
+    //hotas();
+    requestData();
+    DeBug();
 }
