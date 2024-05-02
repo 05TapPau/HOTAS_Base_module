@@ -19,6 +19,7 @@ const byte BaseAddress = 8;
 const byte StickAddress = 9;
 // prep for future ideas ?!
 // const byte ThrottleAddress = 10;
+// const byte PedalsAddress = 11;
 
 //======I2C======
 void requestData()
@@ -31,7 +32,7 @@ void requestData()
 }
 
 //======Joystick-All-Code======
-Joystick_ Base_module( //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother :/
+Joystick_ Base_module( //  name the axies down below whatever you want, most games will recognize them anyways so dont even bother
     JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD,
     32, 0,               //  26  Buttons total on flightstick (might increas with an addition of a throttle); 0 hatswitches //i know i have hats on there butt i read them out as buttons
     true, true, false,   //  X,Y Axies used (roll and pitch yaw at some point with rudders maybe?)
@@ -40,7 +41,7 @@ Joystick_ Base_module( //  name the axies down below whatever you want, most gam
     false, false);       //  brakes and steering
 
 void hotas()
-{ //      Do da Hotas shit
+{ //      Do da Hotas 
     Base_module.setYAxis(analogRead(A0));
     Base_module.setXAxis(analogRead(A1));
     Base_module.setThrottle(analogRead(A2));
