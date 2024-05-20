@@ -1,27 +1,30 @@
 #include "Arduino.h"
 #include <Wire.h>
 
+//  possibly a future imprivement to use les storage allthough thtas not yet a problem and probably wont get one either
+/*
+#define ByteNum 4
+int BitNum = 0, PinI = 0;
+bool Button;
+
+byte ButtonBytes[ByteNum]{
+  0,0,0,0
+};
+
+
+bitWrite(ByteNum,BitNum, Button); //byte, bit, set/clear
+*/
+
 #define buttonNum 26
 #define EnableTrim 2
 #define EnableTMS 3
 #define EnableDMS 4
 
-// data to be sent and received
+//  there is a struct named I2cTxStruct witch consists of a Bytearray with 26 Bytes
 struct I2cTxStruct
 {
     byte Buttondata[buttonNum]; // 26
-};
-
-bool Buttons[buttonNum]{
-    0, 0, 0, 0, 0, /*hat0*/
-    0, 0, 0, 0, 0, /*hat1*/
-    0, 0, 0, 0, 0, /*hat2*/
-    0, 0, 0, 0, 0, /*hat3*/
-    0, 0,          /*trig*/
-    0,             /*pnky*/
-    0,             /*indx*/
-    0,             /*padd*/
-    0              /*Pckl*/
+    
 };
 
 I2cTxStruct txData = {
@@ -48,53 +51,36 @@ const byte otherAddress = 8;
 void requestEvent()
 {
     Wire.write((byte *)&txData, sizeof(txData));
-    rqSent = true;
 }
-
-
 void CheckTrim()
 {
     digitalWrite(EnableTrim, LOW);
-    Buttons[0] = digitalRead(5);
-    Buttons[1] = digitalRead(6);
-    Buttons[2] = digitalRead(7);
-    Buttons[3] = digitalRead(8);
-    Buttons[4] = digitalRead(9);
+    txData.Buttondata[0] = digitalRead(5);
+    txData.Buttondata[1] = digitalRead(6);
+    txData.Buttondata[2] = digitalRead(7);
+    txData.Buttondata[3] = digitalRead(8);
+    txData.Buttondata[4] = digitalRead(9);
     digitalWrite(EnableTrim, HIGH);
 }
 void CheckTMS()
 {
     digitalWrite(EnableTMS, LOW);
-    Buttons[5] = digitalRead(5);
-    Buttons[6] = digitalRead(6);
-    Buttons[7] = digitalRead(7);
-    Buttons[8] = digitalRead(8);
-    Buttons[9] = digitalRead(9);
+    txData.Buttondata[5] = digitalRead(5);
+    txData.Buttondata[6] = digitalRead(6);
+    txData.Buttondata[7] = digitalRead(7);
+    txData.Buttondata[8] = digitalRead(8);
+    txData.Buttondata[9] = digitalRead(9);
     digitalWrite(EnableTMS, HIGH);
 }
 void CheckDMS()
 {
     digitalWrite(EnableDMS, LOW);
-    Buttons[10] = digitalRead(5);
-    Buttons[11] = digitalRead(6);
-    Buttons[12] = digitalRead(7);
-    Buttons[13] = digitalRead(8);
-    Buttons[14] = digitalRead(9);
+    txData.Buttondata[10] = digitalRead(5);
+    txData.Buttondata[11] = digitalRead(6);
+    txData.Buttondata[12] = digitalRead(7);
+    txData.Buttondata[13] = digitalRead(8);
+    txData.Buttondata[14] = digitalRead(9);
     digitalWrite(EnableDMS, HIGH);
-}
-
-void updateDataToSend()
-{
-    // update the data after the previous message has been sent
-    // new data will be ready when the next request arrives
-    if (rqSent == true)
-    {
-        rqSent = false;
-        for (int i = 0; i < buttonNum; i++)
-        {
-            txData.Buttondata[i] = Buttons[i];
-        }
-    }
 }
 
 void updateButtonStates()
@@ -111,16 +97,16 @@ void updateButtonStates()
     CheckTMS();
     CheckDMS();
 
-    Buttons[15] = digitalRead(10);
-    Buttons[16] = digitalRead(11);
-    Buttons[17] = digitalRead(12);
-    Buttons[18] = !digitalRead(13);
-    Buttons[19] = digitalRead(A0);
-    Buttons[20] = digitalRead(A1);
-    Buttons[21] = digitalRead(A2);
-    Buttons[22] = digitalRead(A3);
-    (analogRead(A6)>512) ? Buttons[23] = 1 : Buttons[23] = 0;
-    (analogRead(A7)>512) ? Buttons[24] = 1 : Buttons[24] = 0;
+    txData.Buttondata[15] = digitalRead(10);
+    txData.Buttondata[16] = digitalRead(11);
+    txData.Buttondata[17] = digitalRead(12);
+    txData.Buttondata[18] = !digitalRead(13);
+    txData.Buttondata[19] = digitalRead(A0);
+    txData.Buttondata[20] = digitalRead(A1);
+    txData.Buttondata[21] = digitalRead(A2);
+    txData.Buttondata[22] = digitalRead(A3);
+    (analogRead(A6)>512) ? txData.Buttondata[23] = 1 : txData.Buttondata[23] = 0;   //  Dont aske me why butt i couldnt read these pins digitaly?
+    (analogRead(A7)>512) ? txData.Buttondata[24] = 1 : txData.Buttondata[24] = 0;   //  so if analog above 512 (1024/2) its =true elese =false
 }
 
 //======Arduino======
@@ -157,5 +143,4 @@ void loop()
 {
     // this function updates the data in txData
     updateButtonStates();
-    updateDataToSend();
 }
